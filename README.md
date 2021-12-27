@@ -64,6 +64,7 @@ run方法
     m.foreachStmt(onStatement)
 ```
 onPort中遍历IO类型，得到clocks和inputs，inputs中append的是BVSymbol类型
+
 onStatement根据不同statement类型得到inputs, signals, states等
 
 返回一个TransitionSystem
