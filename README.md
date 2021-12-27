@@ -39,6 +39,39 @@ def encode(sys: TransitionSystem): Iterable[SMTCommand] = {...}
   * can then be exported as SMTLib or Btor2 file.
   */
   ```
+输入之前需要进行firrtl module的inline，但是目前还没清楚具体再那一步完成了inline
+```
+// since this pass only runs on the main module, inlining needs to happen before
+  override def optionalPrerequisites: Seq[TransformDependency] = Seq(Dependency[firrtl.passes.InlineInstances])
+```
+
+execute中会new一个ModuleToTransitionSystem类，调用其中的run方法
+```
+override protected def execute(state: CircuitState): CircuitState = {
+ ...
+ // convert the main module
+   ...
+      case m: ir.Module =>
+        new ModuleToTransitionSystem(presetRegs = presetRegs, memInit = memInit, uninterpreted = uninterpreted).run(m)
+    }
+}
+```
+
+run方法
+```
+// first pass over the module to convert expressions; discover state and I/O
+    m.foreachPort(onPort)
+    m.foreachStmt(onStatement)
+```
+onPort中遍历IO类型，得到clocks和inputs，inputs中append的是BVSymbol类型
+onStatement根据不同statement类型得到inputs, signals, states等
+
+返回一个TransitionSystem
+```
+TransitionSystem(m.name, inputs.toList, states.values.toList, signals.toList, comments.toMap, header)
+```
+
+
 
 ### Maltese.scala
 * bmc调用toTransitionSystem()：
