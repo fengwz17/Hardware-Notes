@@ -72,6 +72,23 @@ onStatement根据不同statement类型得到inputs, signals, states等
 TransitionSystem(m.name, inputs.toList, states.values.toList, signals.toList, comments.toMap, header)
 ```
 
+* ***UninterpretedModuleAnnotation.scala***:
+```
+/** ExtModules annotated as UninterpretedModule will be modelled as
+  * UninterpretedFunction (SMTLib) or constant arrays (btor2).
+  * This can be useful when trying to abstract over a function that the
+  * SMT solver or model checker is struggling with.
+  ...
+  */
+```
+chekModule方法
+```
+/** checks to see whether the annotation module can actually be abstracted. Use *after* LowerTypes! */
+  def checkModule(m: ir.DefModule, anno: UninterpretedModuleAnnotation): Unit = m match {
+  ...
+  }
+```
+
 
 
 ### Maltese.scala
